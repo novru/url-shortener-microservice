@@ -2,7 +2,7 @@ const dns = require("dns");
 const { URL } = require("url");
 const { createUrl, findUrlById } = require("../services/url-services");
 
-const urlShortener = (req, res) => {
+const urlShortener = (req, res, next) => {
 	try {
 		const url_name = new URL(req.body.url);
 		console.log(url_name);
@@ -12,7 +12,7 @@ const urlShortener = (req, res) => {
 
 			console.log("address: %j family: IPv%s", address, family);
 
-			createUrl(url_name.origin, (err, data) => {
+			createUrl(url_name.href, (err, data) => {
 				if (err) {
 					return next(err);
 				}
@@ -22,7 +22,7 @@ const urlShortener = (req, res) => {
 				}
 
 				return res.json({
-					originalUrl: data.originalUrl,
+					original_url: data.originalUrl,
 					short_url: data.id,
 				});
 			});
@@ -33,7 +33,7 @@ const urlShortener = (req, res) => {
 	}
 };
 
-const findById = (req, res) => {
+const findById = (req, res, next) => {
     const short_url_id = req.params.short_url
 
     findUrlById(short_url_id, (err, data) =>{
